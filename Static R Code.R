@@ -4,6 +4,9 @@
 
 # Set Up Libraries  
 library(tidyverse)
+library(knitr)
+library(caret)
+library(tree)
 
 # -----------------------DATA OVERALL------------------------------ # 
 # Bring in Data  
@@ -20,6 +23,16 @@ data <- mutate(data, letter =
 
 # Create Pass Fail Variable  
 data <- mutate(data, final = ifelse(G3>= 10, "Pass", "Fail"))
+
+# Make certain variables factors
+data$letter <- as.factor(data$letter)
+data$final <- as.factor(data$final)
+data$sex <- as.factor(data$sex)
+data$school <- as.factor(data$school)
+data$Pstatus <- as.factor(data$Pstatus)
+data$famsize <- as.factor(data$famsize)
+data$internet <- as.factor(data$internet)
+data$higher <- as.factor(data$higher)
 
 
 # Select Only Specific Variables 
@@ -44,15 +57,40 @@ table(data$school, data$final)
 # Create a few bar graphs
 # Bar graphs of pass fail 
 g <- ggplot(data = data, aes(x = final))
-# Without School 
+# Not by school  
 g + geom_bar()
-# With School 
+# By school  
 g + geom_bar(aes(fill = school))
 # Save Graphs with ggsave()
-ggsave(filename = "testsave.png")
-
+# ggsave(filename = "testsave.png")
 
 # Numerical Data Analysis 
+# Take numeric data only 
+numData <- data %>% select(G3, age, absences, Medu, Fedu, famrel, studytime, failures, traveltime, Walc, health)
+
+# Six number summaries 
+# Not by school 
+mat <- apply(numData, 2, summary, digits = 2, na.rm = TRUE)
+kable(mat)
+# Filter by School 
+numData1 <- data %>% filter(school == "GP") %>% select(G3, age, absences, Medu, Fedu, famrel, studytime, failures, traveltime, Walc, health)
+mat <- apply(numData1, 2, summary, digits =2 )
+kable(mat)
+
+# Numerical Graphs  
+# Histograms 
+g <- ggplot(data = data, aes(x = G3, fill = school))
+
+g + geom_histogram(bins = 10)
+
+# Scatter Plots 
+g <- ggplot(data = data, aes(x = absences, y = G3))
+
+# Not by School 
+g + geom_point() + geom_smooth(method = lm)
+
+# By School 
+g + geom_point(aes(col = school))
 
 # -----------------------TAB 3 : PC------------------------------------- # 
 
@@ -74,5 +112,40 @@ plot(cumsum(PCs$sdev^2/sum(PCs$sdev^2)), xlab = "Principal Component", ylab = "C
 # Stop after Principal Component 4 
 
 # Graphing Different BiPlots  
+# Have to be able to change the choices argument 
 biplot(PCs, xlabs = rep(".", nrow(data)), choices = c(1,3), cex = 1.2)
+
+# -----------------------TAB 4 : Modeling------------------------------------- # 
+
+# Linear Regression Model 
+# Pick your variables and then do a scatter plot 
+g <- ggplot(data = data, aes(x = age, y = G3))
+
+g + geom_point() + geom_smooth(method = lm)
+
+# Create a linear model  
+model1 <- lm(G3 ~ age, data = data)
+
+# Create a linear model with all variables 
+model2 <- lm(G3 ~ ., data = data)
+
+# Predict Data using model
+predict(model1, newdata = data.frame(age = c(13, 14, 16)))
+
+# Classification Tree  
+# adjust data to only include Letter grade 
+data2 <- data %>% select(-G3, -final)
+
+# Classified by Letter  
+classTree <- tree(letter ~ age + absences, data = data2, split = "deviance")
+
+plot(classTree)
+text(classTree)
+
+# Predict using Tree
+predict(classTree, data.frame(age = 13, absences = 2), type = "class")
+
+# -----------------------TAB 5 : Data------------------------------------- # 
+print(data)
+
 
