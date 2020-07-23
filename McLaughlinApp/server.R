@@ -6,6 +6,7 @@ library(shiny)
 library(DT)
 library(tidyverse)
 library(googleVis)
+library(devtools)
 
 # Bring in Data  
 data <- read_delim("student-mat.csv", delim = ";")
@@ -39,6 +40,8 @@ data <- data %>% select(final, letter, G3, sex, age, school, absences, Pstatus, 
 # Define server logic for each tab 
 shinyServer(function(input, output, session) {
 
+    
+# ---------- TAB 2 ---------------- # 
     getData <- reactive({
         data2 <- data %>% select(input$CatTable)
         })
@@ -86,13 +89,31 @@ shinyServer(function(input, output, session) {
             gvisTable(mat)
         }
     })
+    
+    output$scatter <- renderPlot({
+        # Create Scatter Plot 
+        g <- ggplot(data = data, 
+                    aes_string(x = input$xvar, y = input$yvar))
+        g + geom_point()
+    })
+        
+       output$savescat <- downloadHandler({
+           observeEvent(input$save, {
+            ggsave(filename = "plot.png")})
+       })
+    
+    
+# -------------- TAB 5 ------------ # 
     # Output for Tab 5 
     output$tab5 <- renderTable({
         data
+        #ggsave("data.pdf", tableInput())
+       # tableInput()
     })
     ### Fix this later
   # observe( if (input$save){
        # ggsave(filename = "Dataset")}  
        # else {}
-   
-    })
+
+})
+    

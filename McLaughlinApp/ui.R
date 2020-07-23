@@ -78,14 +78,29 @@ shinyUI(fluidPage(
                                                                  choices = list("G3", "age", "absences", "Medu",
                                                                                 "Fedu", "famrel", "studytime",
                                                                                 "failures", "traveltime", "Walc",
-                                                                                "health"), multiple = FALSE)),)), 
-                                uiOutput("numsums")
+                                                                                "health"), multiple = FALSE))), 
+                                uiOutput("numsums"), 
                             
-                                #
-                            ))), 
+                            # Scatterplot Box 
+                            box(title = "Scatterplot", 
+                                selectInput("xvar", "X", 
+                                            choices = list("G3", "age", "absences", "Medu",
+                                                           "Fedu", "famrel", "studytime",
+                                                           "failures", "traveltime", "Walc",
+                                                           "health" ), multiple = FALSE), 
+                                selectInput("yvar", "Y", 
+                                            choices = list("G3", "age", "absences", "Medu",
+                                                           "Fedu", "famrel", "studytime",
+                                                           "failures", "traveltime", "Walc",
+                                                           "health"), multiple = FALSE), 
+                                plotOutput("scatter")), 
+                                
+                                box(actionButton("savescat", "Save Scatterplot"))
+                            )), 
                 
                 # Fifth Tab 
                 tabItem(tabName = "D",
+                        fluidRow(
                         # Widget to Save Data Set
                         box( 
                             actionButton("save", "Save Dataset")), 
@@ -96,7 +111,8 @@ shinyUI(fluidPage(
             )
         )
     )
-    
+))
+) 
     # Sidebar with ability for user to pick categorial or quantitative
 
         # Show a plot of the generated distribution
