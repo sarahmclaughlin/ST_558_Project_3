@@ -35,16 +35,18 @@ shinyUI(fluidPage(
         # Dashboard Body 
         dashboardBody(
             tabItems(
+                # First Tab  
                 
+                # Second Tab  
                 # Categorical Data Analysis Tab 
                 tabItem(tabName = "Cat", 
                         fluidRow(
-                            # Type of Data Widget
                             box(title = "Analysis of Categorical Data", 
                                 # Select Widget Input 
                                 selectInput("CatTable", 
                                            "Pick Variable", 
-                                            choices = list("final", "letter", "sex","age", "school", "Pstatus", "internet", "higher"), 
+                                            choices = list("final", "letter", "sex",
+                                                           "age", "school", "Pstatus", "internet", "higher"), 
                                             multiple = FALSE)), 
                             # One Way Table 
                             box(title = "One Way Table", 
@@ -53,17 +55,32 @@ shinyUI(fluidPage(
                             # Bar Graphs 
                             box(title = "Bar Graphs", 
                                 # Click to Sort by a Variable 
-                                selectInput("CatCol", 
+                                checkboxInput("color", "Graph by color?"), 
+                                    
+                                    conditionalPanel(condition = "input.color", 
+                                        selectInput("CatCol", 
                                             "Color by Variable", 
-                                            choices = list("None", "sex", "school", "Pstatus", "internet", "higher"), 
+                                            choices = list("sex", "school", "Pstatus", "internet", "higher"), 
                                             multiple = FALSE), 
                                 plotOutput("catGraph"))
-                        )),
+                        ))),
                 
                 # Quantitative Data Analysis Tab 
-                tabItem(tabname = "Quant", 
+                tabItem(tabName = "Quant", 
                         fluidRow( 
-                            box(
+                            # Title Box
+                            box(title = "Six Number Summary", 
+                            # Click to analyze only one variable  
+                                checkboxInput("one", "Analyze One Numeric Variable?"), 
+                                    conditionalPanel(condition = "input.one", 
+                                                     selectInput("oneNum", 
+                                                                 "Variable", 
+                                                                 choices = list("G3", "age", "absences", "Medu",
+                                                                                "Fedu", "famrel", "studytime",
+                                                                                "failures", "traveltime", "Walc",
+                                                                                "health"), multiple = FALSE)),)), 
+                                uiOutput("numsums")
+                            
                                 #
                             ))), 
                 
@@ -93,6 +110,7 @@ shinyUI(fluidPage(
            # )
       #  )
    # )
-  )
-)
+
+
+
 

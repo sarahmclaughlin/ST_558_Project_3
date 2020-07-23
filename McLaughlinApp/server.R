@@ -5,6 +5,7 @@
 library(shiny)
 library(DT)
 library(tidyverse)
+library(googleVis)
 
 # Bring in Data  
 data <- read_delim("student-mat.csv", delim = ";")
@@ -54,18 +55,37 @@ shinyServer(function(input, output, session) {
     
     output$catGraph <- renderPlot({
         #Not colored by a variable 
-        if (as.character(input$CatCol) == "None"){
-            # Bar graphs of pass fail 
+        if (input$color){
+            # Color 
             g <- ggplot(data = data, aes_string(x = input$CatTable))
-            # Not by school  
-            g + geom_bar()
-        } else {
-            g <- ggplot(data = data, aes_string(x = input$CatTable))
-            # By School 
+            # By color
             g + geom_bar(aes_string(fill = input$CatCol))
+            
+        } else {
+            # Bar graphs of variable 
+            g <- ggplot(data = data, aes_string(x = input$CatTable))
+            # Not by color 
+            g + geom_bar()
         }
     })
     
+    # Output for Numerical analysis  
+    output$numsums <- renderGvis({
+        numData <- data %>% select(G3, age, absences, Medu, Fedu, famrel, studytime, 
+                                   failures, traveltime, Walc, health)
+        mat <- apply(numData, 2, summary, digits = 2, na.rm = TRUE)
+        mat <- cbind(' ' = c("Min", "1st Q", "Median", "Mean", "3rd Q", "Max"), mat)
+        mat <- as.data.frame(mat) 
+        
+        # Just one variable 
+        if (input$one){
+            oneMat <- cbind(' ' = c("Min", "1st Q", "Median", "Mean", "3rd Q", "Max"), mat[input$oneNum])
+            gvisTable(oneMat)
+        } else {
+        # All variables 
+            gvisTable(mat)
+        }
+    })
     # Output for Tab 5 
     output$tab5 <- renderTable({
         data
