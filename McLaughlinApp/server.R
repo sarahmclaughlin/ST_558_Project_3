@@ -40,6 +40,9 @@ data <- data %>% select(final, letter, G3, sex, age, school, absences, Pstatus, 
 # Define server logic for each tab 
 shinyServer(function(input, output, session) {
 
+
+# ---------- TAB 1 ---------------- #
+    
     
 # ---------- TAB 2 ---------------- # 
     getData <- reactive({
@@ -91,12 +94,28 @@ shinyServer(function(input, output, session) {
         }
     })
     
+    # Histogram
+    output$Hist <- renderPlot({
+        if(input$one) {
+        g <- ggplot(data = data, aes_string(x = input$oneNum))
+        
+        g + geom_histogram(stat = "count")
+        }else {}
+        })
+    
+    # Scatter Plot 
     output$scatter <- renderPlot({
         # Create Scatter Plot 
         g <- ggplot(data = data, 
                         aes_string(x = input$xvar, y = input$yvar))
         g + geom_point(position = "jitter")}
     )
+    
+    # Info for click 
+    output$info <- renderText({
+        paste0("x=", input$plot_click$x, "\ny=", input$plot_click$y)
+    })
+    
     # Create Reactive function to use to save plot  
     plotInput <- reactive({
         g <- ggplot(data = data, 

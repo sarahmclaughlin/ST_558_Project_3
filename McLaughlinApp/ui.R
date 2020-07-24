@@ -83,6 +83,9 @@ shinyUI(fluidPage(
                                 uiOutput("numsums"), 
                             br(), 
                             
+                            box(title = "Histogram",
+                                plotOutput("Hist")),
+                            
                             # Scatterplot Box 
                             box(title = "Scatterplot", 
                                 selectInput("xvar", "X", 
@@ -95,7 +98,9 @@ shinyUI(fluidPage(
                                                            "Fedu", "famrel", "studytime",
                                                            "failures", "traveltime", "Walc",
                                                            "health"), multiple = FALSE), 
-                                plotOutput("scatter"), 
+                                plotOutput("scatter", click = "plot_click"),
+                                verbatimTextOutput("info"),
+                            
                                 # Save Scatter Plot 
                                 downloadButton("savescat", "Download")
                             ))),
