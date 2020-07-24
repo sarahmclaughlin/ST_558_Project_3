@@ -166,7 +166,17 @@ shinyServer(function(input, output, session) {
            } else {}
        })
       
-    
+# -------------- TAB 4 ------------ #
+    output$linreg <- renderPrint({
+        # Data for Regression 
+        regData <- data %>% select(G3, sex, age, school, absences, studytime, failures)
+        
+        if(length(input$regX) > 0){
+            model <- lm(as.formula(paste("G3 ~ ", paste(input$regX, collapse = "+"))), data = regData)
+            print(model$coefficients)
+        } else {}
+    })
+
 # -------------- TAB 5 ------------ # 
     # Output for Tab 5 
        

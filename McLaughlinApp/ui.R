@@ -27,7 +27,9 @@ shinyUI(fluidPage(
                 # Third Tab 
                 menuItem("Principal Component Analysis", tabName = "PCA"), 
                 # Fourth Tab 
-                menuItem("Modeling", tabName = "Model"), 
+                menuItem("Modeling", tabName = "Model", 
+                         menuSubItem("Linear Regression Model", tabName = "LinReg"), 
+                         menuSubItem("Classification Tree", tabName = "Class")), 
                 # Fifth Tab 
                 menuItem("Data", tabName = "D")
             )
@@ -83,11 +85,11 @@ shinyUI(fluidPage(
                                 uiOutput("numsums"), 
                             br(), 
                             
-                            box(title = "Histogram",
+                            box(title = "Histogram of One Variable",
                                 plotOutput("Hist")),
                             
                             # Scatterplot Box 
-                            box(title = "Scatterplot", 
+                            box(title = "Scatterplot for Two Variables", 
                                 selectInput("xvar", "X", 
                                             choices = list("G3", "age", "absences", "Medu",
                                                            "Fedu", "famrel", "studytime",
@@ -127,12 +129,33 @@ shinyUI(fluidPage(
                         )
                         ),
           # ---------------- Fourth Tab ---------------- # 
-          
+                # Linear Regression Tab
+                tabItem(tabName = "LinReg", 
+                        fluidPage(
+                          box(title = "Linear Regression", 
+                              selectInput("regX", "Pick X Variable(s) for Linear Regression", 
+                                          choices = list("sex", "age", "school", 
+                                                         "absences", "studytime", "failures"), 
+                                          multiple = TRUE), 
+                              verbatimTextOutput("linreg")), 
+                          box(title = "Values for Prediction", 
+                              h5("Insert values for prediction below"), 
+                              # Var 1 G3, sex, age, school, absences, studytime, failures
+                              h6("For sex, Female = 0, Male = 1"),
+                            numericInput("sexValue","Sex", value = 0, min = 0, max = 1, step = 1), 
+                            numericInput("ageValue", "Age", value = 0, min = 15, max = 22, step = 1), 
+                              h6("For school, Gabriel Pereira = 0, Mousinho da Silveira = 1"), 
+                            numericInput("schoolValue", "School", value = 0, min = 0, max = 1, step = 1 ), 
+                            numericInput("absencesValue", "Absences", value = 0, min = 0, max = 75, step = 1), 
+                              h6("For study time, Less Than Two Hours = 1, 2-5 Hours = 2, 5-10 Hours = 3, More than 10 Hours = 4"),
+                            numericInput("studytimeValue", "Studytime", value = 0, min = 0, max = 4, step = 1 ), 
+                            numericInput("failuresValue", "Number of Failures", value = 0, min = 0, max = 3, step = 1)
+                        ))),
           
           
           # ---------------- Fifth Tab ---------------- # 
                 tabItem(tabName = "D",
-                        fluidRow(
+                        fluidPage(
                         # Widget to Save Data Set
                         box( 
                             downloadButton("saveData", "Save Dataset")), 
@@ -144,6 +167,7 @@ shinyUI(fluidPage(
         )
     )
 )
+
 ) #FluidPage
 ) #ShinyUI
 
