@@ -95,13 +95,13 @@ shinyServer(function(input, output, session) {
         # Create Scatter Plot 
         g <- ggplot(data = data, 
                         aes_string(x = input$xvar, y = input$yvar))
-        g + geom_point()}
+        g + geom_point(position = "jitter")}
     )
     # Create Reactive function to use to save plot  
     plotInput <- reactive({
         g <- ggplot(data = data, 
                     aes_string(x = input$xvar, y=input$yvar))
-        g + geom_point()
+        g + geom_point(position = "jitter")
     })
     
     # Output for Saving Scatterplot 
@@ -115,7 +115,38 @@ shinyServer(function(input, output, session) {
        )
     
 # -------------- TAB 3 ------------ #
+       output$PCAOutput <- renderPrint({
+           if (length(input$PCAVar) == 0){
+               return("Pick a variable to begin Principal Component Analysis")
+           } else {
+        # PCA Function  
+        PCs <- prcomp(select(data, !!!input$PCAVar), scale = TRUE)
+        
+           print(PCs)
+           }
+           })
        
+       # Biplot 
+       output$biplot <- renderPlot({
+           if (length(input$PCAVar) > 1){
+           PCs <- prcomp(select(data, !!!input$PCAVar), scale = TRUE)
+           biplot(PCs, xlabs = rep(".", nrow(data)), cex = 1.2)
+           } else {}
+       })
+       
+       # Appropriateness of PCs
+       output$approp <- renderPlot({
+           if(length(input$PCAVar) > 1){
+           PCs <- prcomp(select(data, !!!input$PCAVar), scale = TRUE)
+           # Plots to see appropriateness of PCs 
+           par(mfrow = c(1,2))
+           plot(PCs$sdev^2/sum(PCs$sdev^2), xlab = "Principal Component", 
+                ylab = "Proportion of Variance Explained", ylim = c(0,1), 
+                type = 'b')
+           plot(cumsum(PCs$sdev^2/sum(PCs$sdev^2)), xlab = "Principal Component", ylab = "Cum. Prop of Variance Explained", ylim = c(0,1), type = 'b')
+           } else {}
+       })
+      
     
 # -------------- TAB 5 ------------ # 
     # Output for Tab 5 

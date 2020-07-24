@@ -10,13 +10,14 @@ library(shinydashboard)
 shinyUI(fluidPage(
 
     # Application title
-   titlePanel("McLauglin APP: Using Data Mining to Predict Secondary School Performance in Math Class"),
+   titlePanel("Using Data Mining to Predict Secondary School Performance in Math Class"),
 
     # Create Dashboard  
     dashboardPage(
         dashboardHeader(title = "Dashboard"),
         dashboardSidebar(
             sidebarMenu(
+    # Create Tabs 
                 # First Tab 
                 menuItem("Introduction", tabName = "Intro"),
                 # Second Tab 
@@ -35,9 +36,9 @@ shinyUI(fluidPage(
         # Dashboard Body 
         dashboardBody(
             tabItems(
-                # First Tab  
+      # ---------------- First Tab ----------------- # 
                 
-                # Second Tab  
+      # ---------------- Second Tab ---------------- # 
                 # Categorical Data Analysis Tab 
                 tabItem(tabName = "Cat", 
                         fluidPage(
@@ -55,7 +56,7 @@ shinyUI(fluidPage(
                             # Bar Graphs 
                             box(title = "Bar Graphs", 
                                 # Click to Sort by a Variable 
-                                checkboxInput("color", "Graph by color?"), 
+                                checkboxInput("color", "Color by Second Variable?"), 
                                     
                                     conditionalPanel(condition = "input.color", 
                                         selectInput("CatCol", 
@@ -80,6 +81,7 @@ shinyUI(fluidPage(
                                                                                 "failures", "traveltime", "Walc",
                                                                                 "health"), multiple = FALSE))), 
                                 uiOutput("numsums"), 
+                            br(), 
                             
                             # Scatterplot Box 
                             box(title = "Scatterplot", 
@@ -98,18 +100,32 @@ shinyUI(fluidPage(
                                 downloadButton("savescat", "Download")
                             ))),
                 
-                # Third Tab  
+          # ---------------- Third Tab ---------------- #  
                 tabItem(tabName = "PCA", 
                         fluidPage(
+                          # PCA Output 
                             box(title = "Principal Component Analysis", 
                                 selectInput("PCAVar", "Variables", 
                                             choices = list("G3", "age", "absences", "Medu",
                                                            "Fedu", "famrel", "studytime",
                                                            "failures", "traveltime", "Walc",
-                                                           "health"), multiple = TRUE))
-                        )),
-                
-                # Fifth Tab 
+                                                           "health"), multiple = TRUE)),
+                            box(title = "PCA Output", 
+                                verbatimTextOutput("PCAOutput")), 
+                          # Biplot 
+                            box(title = "BiPlot", 
+                                plotOutput("biplot")), 
+                          
+                          # Appropriateness of PCs
+                            box(title = "Appropriateness of PCs", 
+                                plotOutput("approp"))
+                        )
+                        ),
+          # ---------------- Fourth Tab ---------------- # 
+          
+          
+          
+          # ---------------- Fifth Tab ---------------- # 
                 tabItem(tabName = "D",
                         fluidRow(
                         # Widget to Save Data Set
@@ -127,20 +143,7 @@ shinyUI(fluidPage(
 ) #ShinyUI
 
  
-    # Sidebar with ability for user to pick categorial or quantitative
-
-        # Show a plot of the generated distribution
-       # mainPanel(
-           # tabsetPanel(
-              #  tabPanel("Information", ), 
-               # tabPanel("Data Exploration"), 
-               # tabPanel("Principal Component Analysis"), 
-               # tabPanel("Modeling"), 
-               # tabPanel("Data"))
-           # )
-      #  )
-   # )
-
+    
 
 
 
