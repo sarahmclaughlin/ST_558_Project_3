@@ -155,19 +155,22 @@ shinyUI(fluidPage(
           
           # ---------------- Fifth Tab ---------------- # 
                 tabItem(tabName = "D",
-                        fluidPage(
                         # Widget to Save Data Set
-                        box( 
-                            downloadButton("saveData", "Save Dataset")), 
+                        fluidRow(box( 
+                          downloadButton("saveData", "Save Dataset")), 
+                          
+                        fluidRow(
+                          # Show DataSet
+                          box(title = "Data", 
+                              tableOutput("tab5")))
+
                         
-                        # Show DataSet
-                        box(title = "Data", 
-                            tableOutput("tab5")))
+                        
             )
         )
     )
 )
-
+)
 ) #FluidPage
 ) #ShinyUI
 
