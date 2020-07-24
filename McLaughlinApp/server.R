@@ -93,14 +93,25 @@ shinyServer(function(input, output, session) {
     output$scatter <- renderPlot({
         # Create Scatter Plot 
         g <- ggplot(data = data, 
-                    aes_string(x = input$xvar, y = input$yvar))
+                        aes_string(x = input$xvar, y = input$yvar))
+        g + geom_point()}
+    )
+        
+    plotInput <- reactive({
+        g <- ggplot(data = data, 
+                    aes_string(x = input$xvar, y=input$yvar))
         g + geom_point()
     })
-        
-       output$savescat <- downloadHandler({
-           observeEvent(input$save, {
-            ggsave(filename = "plot.png")})
-       })
+    
+    
+       output$savescat <- downloadHandler(
+          filename <- function(){
+              paste(input$xvar, "by", input$yvar, ".png", sep = "")
+         }, 
+          content <-function(file){
+              ggsave(file, plot = plotInput())
+          }
+       )
     
     
 # -------------- TAB 5 ------------ # 

@@ -93,10 +93,10 @@ shinyUI(fluidPage(
                                                            "Fedu", "famrel", "studytime",
                                                            "failures", "traveltime", "Walc",
                                                            "health"), multiple = FALSE), 
-                                plotOutput("scatter")), 
-                                
-                                box(actionButton("savescat", "Save Scatterplot"))
-                            )), 
+                                plotOutput("scatter"), 
+                                # Save Scatter Plot 
+                                downloadButton("savescat", "Download")
+                            ))), 
                 
                 # Fifth Tab 
                 tabItem(tabName = "D",
