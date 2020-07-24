@@ -119,15 +119,18 @@ shinyServer(function(input, output, session) {
     
 # -------------- TAB 5 ------------ # 
     # Output for Tab 5 
-    output$tab5 <- renderTable({
-        data
-        #ggsave("data.pdf", tableInput())
-       # tableInput()
+       
+    output$tab5 <- renderGvis({
+        gvisTable(data)
     })
-    ### Fix this later
-  # observe( if (input$save){
-       # ggsave(filename = "Dataset")}  
-       # else {}
-
+    
+    output$saveData <- downloadHandler(
+        filename<- function(){
+            paste("data", Sys.Date(), ".csv", sep = "")
+        },
+        content <- function(file){
+            write.csv(data, file)
+        }
+    )
 })
     

@@ -114,7 +114,7 @@ shinyUI(fluidPage(
                         fluidRow(
                         # Widget to Save Data Set
                         box( 
-                            actionButton("save", "Save Dataset")), 
+                            downloadButton("saveData", "Save Dataset")), 
                         
                         # Show DataSet
                         box(title = "Data", 
