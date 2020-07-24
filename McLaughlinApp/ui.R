@@ -40,7 +40,7 @@ shinyUI(fluidPage(
                 # Second Tab  
                 # Categorical Data Analysis Tab 
                 tabItem(tabName = "Cat", 
-                        fluidRow(
+                        fluidPage(
                             box(title = "Analysis of Categorical Data", 
                                 # Select Widget Input 
                                 selectInput("CatTable", 
@@ -61,13 +61,13 @@ shinyUI(fluidPage(
                                         selectInput("CatCol", 
                                             "Color by Variable", 
                                             choices = list("sex", "school", "Pstatus", "internet", "higher"), 
-                                            multiple = FALSE), 
+                                            multiple = FALSE)), 
                                 plotOutput("catGraph"))
-                        ))),
+                        )),
                 
                 # Quantitative Data Analysis Tab 
                 tabItem(tabName = "Quant", 
-                        fluidRow( 
+                        fluidPage( 
                             # Title Box
                             box(title = "Six Number Summary", 
                             # Click to analyze only one variable  
@@ -96,7 +96,18 @@ shinyUI(fluidPage(
                                 plotOutput("scatter"), 
                                 # Save Scatter Plot 
                                 downloadButton("savescat", "Download")
-                            ))), 
+                            ))),
+                
+                # Third Tab  
+                tabItem(tabName = "PCA", 
+                        fluidPage(
+                            box(title = "Principal Component Analysis", 
+                                selectInput("PCAVar", "Variables", 
+                                            choices = list("G3", "age", "absences", "Medu",
+                                                           "Fedu", "famrel", "studytime",
+                                                           "failures", "traveltime", "Walc",
+                                                           "health"), multiple = TRUE))
+                        )),
                 
                 # Fifth Tab 
                 tabItem(tabName = "D",
@@ -111,8 +122,11 @@ shinyUI(fluidPage(
             )
         )
     )
-))
-) 
+)
+) #FluidPage
+) #ShinyUI
+
+ 
     # Sidebar with ability for user to pick categorial or quantitative
 
         # Show a plot of the generated distribution

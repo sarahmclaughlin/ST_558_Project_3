@@ -56,19 +56,20 @@ shinyServer(function(input, output, session) {
     table(select(newData, input$CatTable))
     })
     
+    # Bar Graphs
     output$catGraph <- renderPlot({
-        #Not colored by a variable 
+        
+        # Colored by variable 
         if (input$color){
-            # Color 
             g <- ggplot(data = data, aes_string(x = input$CatTable))
-            # By color
+            #By color
             g + geom_bar(aes_string(fill = input$CatCol))
             
         } else {
-            # Bar graphs of variable 
-            g <- ggplot(data = data, aes_string(x = input$CatTable))
-            # Not by color 
-            g + geom_bar()
+        # Bar graphs of variable 
+        g <- ggplot(data = data, aes_string(x = input$CatTable))
+        # Not by color 
+        g + geom_bar()
         }
     })
     
@@ -96,14 +97,14 @@ shinyServer(function(input, output, session) {
                         aes_string(x = input$xvar, y = input$yvar))
         g + geom_point()}
     )
-        
+    # Create Reactive function to use to save plot  
     plotInput <- reactive({
         g <- ggplot(data = data, 
                     aes_string(x = input$xvar, y=input$yvar))
         g + geom_point()
     })
     
-    
+    # Output for Saving Scatterplot 
        output$savescat <- downloadHandler(
           filename <- function(){
               paste(input$xvar, "by", input$yvar, ".png", sep = "")
@@ -113,6 +114,8 @@ shinyServer(function(input, output, session) {
           }
        )
     
+# -------------- TAB 3 ------------ #
+       
     
 # -------------- TAB 5 ------------ # 
     # Output for Tab 5 
