@@ -25,7 +25,6 @@ data <- mutate(data, final = ifelse(G3>= 10, "Pass", "Fail"))
 # Make certain variables factors
 data$letter <- as.factor(data$letter)
 data$final <- as.factor(data$final)
-data$sex <- as.factor(data$sex)
 data$school <- as.factor(data$school)
 data$Pstatus <- as.factor(data$Pstatus)
 data$famsize <- as.factor(data$famsize)
@@ -43,7 +42,10 @@ shinyServer(function(input, output, session) {
 
 
 # ---------- TAB 1 ---------------- #
-    
+    url <- a("Link to Paper", href = "http://www3.dsi.uminho.pt/pcortez/student.pdf ")
+    output$paper <- renderUI({
+      tagList("URL Link:", url)
+    })
     
 # ---------- TAB 2 ---------------- # 
     getData <- reactive({
@@ -170,7 +172,7 @@ shinyServer(function(input, output, session) {
 # -------------- TAB 4 ------------ #
     output$linreg <- renderPrint({
         # Data for Regression 
-        regData <- data %>% select(G3, sex, age, school, absences, studytime, failures)
+        regData <- data %>% select(G3, sex, age, absences, studytime, failures)
         
         if(length(input$regX) > 0){
             model <- lm(as.formula(paste("G3 ~ ", paste(input$regX, collapse = "+"))), data = regData)
@@ -178,6 +180,18 @@ shinyServer(function(input, output, session) {
         } else {}
     })
 
+    
+    predictionFunc <- reactive({
+      regData <- data %>% select(G3, age, absences, studytime, failures)
+      fullModel <- lm(G3 ~ ., data = regData)
+      dataframe <- data.frame(age = input$ageValue, absences = input$absencesValue, studytime = input$studytimeValue, failures = input$failuresValue)
+     pred <- predict(fullModel, dataframe )
+      pred
+    })
+    
+    output$predictReg <- renderPrint({
+      print(predictionFunc())
+    })
 # -------------- TAB 5 ------------ # 
     # Output for Tab 5 
        

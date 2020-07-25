@@ -39,7 +39,12 @@ shinyUI(fluidPage(
         dashboardBody(
             tabItems(
       # ---------------- First Tab ----------------- # 
-                
+               tabItem(tabName = "Intro", 
+                       fluidPage(
+                         box(title = "Using Data Mining to Predict Secondary School Student Performance", 
+                         uiOutput("paper")
+                       ))),
+               
       # ---------------- Second Tab ---------------- # 
                 # Categorical Data Analysis Tab 
                 tabItem(tabName = "Cat", 
@@ -132,25 +137,26 @@ shinyUI(fluidPage(
                 # Linear Regression Tab
                 tabItem(tabName = "LinReg", 
                         fluidPage(
+                         box(title = "Linear Regression Equation", 
+                              withMathJax("$$Y_i =\\beta_0 +\\beta_1{X_1}+...+\\epsilon_i$$")),
                           box(title = "Linear Regression", 
                               selectInput("regX", "Pick X Variable(s) for Linear Regression", 
-                                          choices = list("sex", "age", "school", 
+                                          choices = list("sex", "age",
                                                          "absences", "studytime", "failures"), 
                                           multiple = TRUE), 
                               verbatimTextOutput("linreg")), 
                           box(title = "Values for Prediction", 
                               h5("Insert values for prediction below"), 
-                              # Var 1 G3, sex, age, school, absences, studytime, failures
-                              h6("For sex, Female = 0, Male = 1"),
-                            numericInput("sexValue","Sex", value = NA, min = 0, max = 1, step = 1), 
-                            numericInput("ageValue", "Age", value = 0, min = 15, max = 22, step = 1), 
-                              h6("For school, Gabriel Pereira = 0, Mousinho da Silveira = 1"), 
-                            numericInput("schoolValue", "School", value = 0, min = 0, max = 1, step = 1 ), 
+                              # Var 1 G3, school, absences, studytime, failures
+                            numericInput("ageValue", "Age", value = 0, min = 15, max = 22, step = 1),
                             numericInput("absencesValue", "Absences", value = 0, min = 0, max = 75, step = 1), 
                               h6("For study time, Less Than Two Hours = 1, 2-5 Hours = 2, 5-10 Hours = 3, More than 10 Hours = 4"),
                             numericInput("studytimeValue", "Studytime", value = 0, min = 0, max = 4, step = 1 ), 
                             numericInput("failuresValue", "Number of Failures", value = 0, min = 0, max = 3, step = 1)
-                        ))),
+                        ), 
+                        # Prediction
+                        box(title = "Prediction", 
+                            verbatimTextOutput("predictReg")))),
           
           
           # ---------------- Fifth Tab ---------------- # 
