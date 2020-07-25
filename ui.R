@@ -49,6 +49,7 @@ shinyUI(fluidPage(
                 # Categorical Data Analysis Tab 
                 tabItem(tabName = "Cat", 
                         fluidPage(
+                          fluidRow(
                             box(title = "Analysis of Categorical Data", 
                                 # Select Widget Input 
                                 selectInput("CatTable", 
@@ -58,9 +59,10 @@ shinyUI(fluidPage(
                                             multiple = FALSE)), 
                             # One Way Table 
                             box(title = "One Way Table", 
-                                tableOutput("catTable")), 
+                                tableOutput("catTable"))), 
                             
                             # Bar Graphs 
+                          fluidRow(
                             box(title = "Bar Graphs", 
                                 # Click to Sort by a Variable 
                                 checkboxInput("color", "Color by Second Variable?"), 
@@ -70,12 +72,13 @@ shinyUI(fluidPage(
                                             "Color by Variable", 
                                             choices = list("sex", "school", "Pstatus", "internet", "higher"), 
                                             multiple = FALSE)), 
-                                plotOutput("catGraph"))
+                                plotOutput("catGraph")))
                         )),
                 
                 # Quantitative Data Analysis Tab 
                 tabItem(tabName = "Quant", 
                         fluidPage( 
+                          fluidRow(
                             # Title Box
                             box(title = "Six Number Summary", 
                             # Click to analyze only one variable  
@@ -86,10 +89,10 @@ shinyUI(fluidPage(
                                                                  choices = list("G3", "age", "absences", "Medu",
                                                                                 "Fedu", "famrel", "studytime",
                                                                                 "failures", "traveltime", "Walc",
-                                                                                "health"), multiple = FALSE))), 
-                                uiOutput("numsums"), 
-                            br(), 
+                                                                                "health"), multiple = FALSE)), 
+                                uiOutput("numsums"))), 
                             
+                          fluidRow(
                             box(title = "Histogram of One Variable",
                                 plotOutput("Hist")),
                             
@@ -109,12 +112,13 @@ shinyUI(fluidPage(
                                 verbatimTextOutput("info"),
                             
                                 # Save Scatter Plot 
-                                downloadButton("savescat", "Download")
+                                downloadButton("savescat", "Download"))
                             ))),
                 
           # ---------------- Third Tab ---------------- #  
                 tabItem(tabName = "PCA", 
                         fluidPage(
+                          fluidRow(
                           # PCA Output 
                             box(title = "Principal Component Analysis", 
                                 selectInput("PCAVar", "Variables", 
@@ -123,25 +127,27 @@ shinyUI(fluidPage(
                                                            "failures", "traveltime", "Walc",
                                                            "health"), multiple = TRUE)),
                             box(title = "PCA Output", 
-                                verbatimTextOutput("PCAOutput")), 
+                                verbatimTextOutput("PCAOutput"))),
+                          
+                          fluidRow(
                           # Biplot 
                             box(title = "BiPlot", 
                                 plotOutput("biplot")), 
                           
                           # Appropriateness of PCs
                             box(title = "Appropriateness of PCs", 
-                                plotOutput("approp"))
+                                plotOutput("approp")))
                         )
                         ),
           # ---------------- Fourth Tab ---------------- # 
                 # Linear Regression Tab
                 tabItem(tabName = "LinReg", 
                         fluidPage(
-                         box(title = "Linear Regression Equation", 
+                         box(title = "General Linear Regression Equation", 
                               withMathJax("$$Y_i =\\beta_0 +\\beta_1{X_1}+...+\\epsilon_i$$")),
                           box(title = "Linear Regression", 
                               selectInput("regX", "Pick X Variable(s) for Linear Regression", 
-                                          choices = list("sex", "age",
+                                          choices = list("age",
                                                          "absences", "studytime", "failures"), 
                                           multiple = TRUE), 
                               verbatimTextOutput("linreg")), 
@@ -157,13 +163,43 @@ shinyUI(fluidPage(
                         # Prediction
                         box(title = "Prediction", 
                             verbatimTextOutput("predictReg")))),
+      
+                # Classification Tree 
+                tabItem(tabName = "Class", 
+                        fluidPage(
+                        fluidRow(
+                        box(title = "Pick variables for Classification Tree", 
+                            selectInput("classVars", "Variables", 
+                                        choices = list("age", "absences", "studytime", "failures"), 
+                                        multiple = TRUE)), 
+                        box(title = "Classification Tree to Predict Letter Grade", 
+                        plotOutput("tree"))),
+                        fluidRow(
+                          box(title = "Assign Variables for Prediction", 
+                              numericInput("ageValueC", "Age", value = 0, min = 15, max = 22, step = 1),
+                              numericInput("absencesValueC", "Absences", value = 0, min = 0, max = 75, step = 1), 
+                              h6("For study time, Less Than Two Hours = 1, 2-5 Hours = 2, 5-10 Hours = 3, More than 10 Hours = 4"),
+                              numericInput("studytimeValueC", "Studytime", value = 0, min = 0, max = 4, step = 1 ), 
+                              numericInput("failuresValueC", "Number of Failures", value = 0, min = 0, max = 3, step = 1)), 
+                          box(title = "Prediction", 
+                              verbatimTextOutput("predictClass"))))), 
+                        
           
           
           # ---------------- Fifth Tab ---------------- # 
                 tabItem(tabName = "D",
+                        
                         # Widget to Save Data Set
-                        fluidRow(box( 
-                          downloadButton("saveData", "Save Dataset")), 
+                        fluidRow(
+                          box(title = "Click Variables that you would like included in your dataset",
+                              selectInput("vars", "Variables", 
+                                          choices = list("final", "letter", "G3", "sex", 
+                                                         "age", "school", "absences", "Pstatus", 
+                                                         "Medu", "Fedu", "famsize", "famrel", 
+                                                         "studytime", "failures", "internet", 
+                                                         "higher", "traveltime", "Walc", "health"), 
+                                                    multiple = TRUE)), 
+                              box(downloadButton("saveData", "Save Dataset")), 
                           
                         fluidRow(
                           # Show DataSet

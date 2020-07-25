@@ -7,6 +7,7 @@ library(DT)
 library(tidyverse)
 library(googleVis)
 library(devtools)
+library(tree)
 
 # Bring in Data  
 data <- read_delim("student-mat.csv", delim = ";")
@@ -170,6 +171,8 @@ shinyServer(function(input, output, session) {
        })
       
 # -------------- TAB 4 ------------ #
+       
+    # Linear regression 
     output$linreg <- renderPrint({
         # Data for Regression 
         regData <- data %>% select(G3, sex, age, absences, studytime, failures)
@@ -192,11 +195,38 @@ shinyServer(function(input, output, session) {
     output$predictReg <- renderPrint({
       print(predictionFunc())
     })
+    
+    # Classification Tree  
+    
+    output$tree <- renderPlot({
+      dataTree <- data %>% select(letter,!!!input$classVars)
+      
+      if (input$classVars > 0){
+      classTree <- tree(as.formula(paste("letter ~ ", paste(input$classVars, collapse = "+"))), data = dataTree, split = "deviance")
+    
+        plot(classTree)
+        text(classTree)
+      } else { }
+    })
+    
+    predictClass <- reactive({
+    classData <- data %>% select(letter, age, absences, studytime, failures)
+    fullTree <- tree(letter ~., data = classData)
+    dataClass <- data.frame(age = input$ageValueC, absences = input$absencesValueC, studytime = input$studytimeValueC, failures = input$failuresValueC)
+    predC <- predict(fullTree, dataClass, type = "class" )
+    predC
+    })
+    
+    output$predictClass <- renderPrint({
+      predictClass()
+    })
 # -------------- TAB 5 ------------ # 
     # Output for Tab 5 
-       
+    
     output$tab5 <- renderGvis({
-        gvisTable(data)
+      
+      data1 <<- data %>% select(!!!input$vars)
+        gvisTable(data1)
     })
     
     output$saveData <- downloadHandler(
@@ -204,7 +234,7 @@ shinyServer(function(input, output, session) {
             paste("data", Sys.Date(), ".csv", sep = "")
         },
         content <- function(file){
-            write.csv(data, file)
+            write.csv(data1, file)
         }
     )
 })
