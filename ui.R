@@ -142,7 +142,7 @@ shinyUI(fluidPage(
                               h5("Insert values for prediction below"), 
                               # Var 1 G3, sex, age, school, absences, studytime, failures
                               h6("For sex, Female = 0, Male = 1"),
-                            numericInput("sexValue","Sex", value = 0, min = 0, max = 1, step = 1), 
+                            numericInput("sexValue","Sex", value = NA, min = 0, max = 1, step = 1), 
                             numericInput("ageValue", "Age", value = 0, min = 15, max = 22, step = 1), 
                               h6("For school, Gabriel Pereira = 0, Mousinho da Silveira = 1"), 
                             numericInput("schoolValue", "School", value = 0, min = 0, max = 1, step = 1 ), 

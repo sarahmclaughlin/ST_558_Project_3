@@ -11,6 +11,7 @@ library(devtools)
 # Bring in Data  
 data <- read_delim("student-mat.csv", delim = ";")
 
+# Create Letter Variables 
 data <- mutate(data, letter = 
                    ifelse(G3 >= 16, "A", 
                           ifelse(G3 >= 14, "B", 
