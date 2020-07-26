@@ -55,7 +55,8 @@ shinyUI(fluidPage(
                                 selectInput("CatTable", 
                                            "Pick Variable", 
                                             choices = list("final", "letter", "sex",
-                                                           "age", "school", "Pstatus", "internet", "higher"), 
+                                                           "age", "school", "Pstatus", "famsize", "internet", 
+                                                           "higher"), 
                                             multiple = FALSE)), 
                             # One Way Table 
                             box(title = "One Way Table", 
@@ -70,7 +71,8 @@ shinyUI(fluidPage(
                                     conditionalPanel(condition = "input.color", 
                                         selectInput("CatCol", 
                                             "Color by Variable", 
-                                            choices = list("sex", "school", "Pstatus", "internet", "higher"), 
+                                            choices = list("sex", "school", "Pstatus", "internet", "higher",
+                                                           "famsize"), 
                                             multiple = FALSE)), 
                                 plotOutput("catGraph")))
                         )),
@@ -86,7 +88,8 @@ shinyUI(fluidPage(
                                     conditionalPanel(condition = "input.one", 
                                                      selectInput("oneNum", 
                                                                  "Variable", 
-                                                                 choices = list("G3", "age", "absences", "Medu",
+                                                                 choices = list("G3", "G1", "G2", "age", 
+                                                                                "absences", "Medu",
                                                                                 "Fedu", "famrel", "studytime",
                                                                                 "failures", "traveltime", "Walc",
                                                                                 "health"), multiple = FALSE)), 
@@ -99,12 +102,12 @@ shinyUI(fluidPage(
                             # Scatterplot Box 
                             box(title = "Scatterplot for Two Variables", 
                                 selectInput("xvar", "X", 
-                                            choices = list("G3", "age", "absences", "Medu",
+                                            choices = list("G3", "G1", "G2", "age", "absences", "Medu",
                                                            "Fedu", "famrel", "studytime",
                                                            "failures", "traveltime", "Walc",
                                                            "health" ), multiple = FALSE), 
                                 selectInput("yvar", "Y", 
-                                            choices = list("G3", "age", "absences", "Medu",
+                                            choices = list("G3", "G1", "G2", "age", "absences", "Medu",
                                                            "Fedu", "famrel", "studytime",
                                                            "failures", "traveltime", "Walc",
                                                            "health"), multiple = FALSE), 
@@ -122,7 +125,7 @@ shinyUI(fluidPage(
                           # PCA Output 
                             box(title = "Principal Component Analysis", 
                                 selectInput("PCAVar", "Variables", 
-                                            choices = list("G3", "age", "absences", "Medu",
+                                            choices = list("G3", "G1", "G2", "age", "absences", "Medu",
                                                            "Fedu", "famrel", "studytime",
                                                            "failures", "traveltime", "Walc",
                                                            "health"), multiple = TRUE)),
@@ -139,6 +142,7 @@ shinyUI(fluidPage(
                                 plotOutput("approp")))
                         )
                         ),
+      
           # ---------------- Fourth Tab ---------------- # 
                 # Linear Regression Tab
                 tabItem(tabName = "LinReg", 
@@ -147,21 +151,42 @@ shinyUI(fluidPage(
                               withMathJax("$$Y_i =\\beta_0 +\\beta_1{X_1}+...+\\epsilon_i$$")),
                           box(title = "Linear Regression", 
                               selectInput("regX", "Pick X Variable(s) for Linear Regression", 
-                                          choices = list("age",
-                                                         "absences", "studytime", "failures"), 
-                                          multiple = TRUE), 
+                                          choices = list("G3", "G1", "G2", "age", "absences", "Medu",
+                                                         "Fedu", "famrel", "studytime",
+                                                         "failures", "traveltime", "Walc",
+                                                         "health"), multiple = TRUE), 
                               verbatimTextOutput("linreg")), 
                           box(title = "Values for Prediction", 
                               h5("Insert values for prediction below"), 
                               # Var 1 G3, school, absences, studytime, failures
+                            numericInput("G1value", "G1", value = 0, min = 0, max = 20, step = 1), 
+                            numericInput("G2value", "G2", value = 0, min = 0, max = 20, step = 1), 
                             numericInput("ageValue", "Age", value = 0, min = 15, max = 22, step = 1),
-                            numericInput("absencesValue", "Absences", value = 0, min = 0, max = 75, step = 1), 
-                              h6("For study time, Less Than Two Hours = 1, 2-5 Hours = 2, 5-10 Hours = 3, More than 10 Hours = 4"),
+                            numericInput("absencesValue", "Absences", value = 0, min = 0, max = 75, step = 1),
+                              h6("For Mother's Education, 0 = No Education, 1 = Primary (4th Grade), 2 = 5th to 9th
+                                 Grade, 3 = Secondary Education, 4 = High Education"),
+                            numericInput("MeduV", "Mother's Education", value = 0, min = 0, max = 4, step = 1), 
+                              h6("For Father's Education, 0 = No Education, 1 = Primary (4th Grade), 2 = 5th to 9th
+                                 Grade, 3 = Secondary Education, 4 = High Education"), 
+                            numericInput("FeduV", "Father's Education", value = 0, min = 0, max = 4, step = 1), 
+                              h6("For Quality of Family Relationship, from 1 - very bad to 5 - excellent"), 
+                            numericInput("famrelV", "Family Relationship", value = 0, min = 1, max = 5, step = 1), 
+                              h6("For study time, 1 = Less Than Two Hours, 2 = 2-5 Hours, 3= 5-10 Hours, 4 = More 
+                                 than 10 Hours"),
                             numericInput("studytimeValue", "Studytime", value = 0, min = 0, max = 4, step = 1 ), 
-                            numericInput("failuresValue", "Number of Failures", value = 0, min = 0, max = 3, step = 1)
-                        ), 
+                            numericInput("failuresValue", "Number of Failures", value = 0, min = 0, 
+                                         max = 3, step = 1), 
+                            numericInput("travelV", "Travel Time (in hours)", value = 0, min = 1, max = 4, 
+                                         step = 1), 
+                              h6("For Weekly Alcohol Consumption, from 1 - very low to 5 - very high"), 
+                            numericInput("WalcV", "Weekly Alcohol Consumption", value = 0, min = 1, max = 5, 
+                                         step = 1), 
+                              h6("For Current Health Status, from 1 - very bad to 5 - very good"), 
+                            numericInput("healthV", "Current Health Status", value = 0, min = 1, max = 5, step = 1)
+                        ),
+                        
                         # Prediction
-                        box(title = "Prediction", 
+                        box(title = "Prediction using Model Created Above", 
                             verbatimTextOutput("predictReg")))),
       
                 # Classification Tree 

@@ -26,15 +26,15 @@ data <- mutate(data, final = ifelse(G3>= 10, "Pass", "Fail"))
 # Make certain variables factors
 data$letter <- as.factor(data$letter)
 data$final <- as.factor(data$final)
-data$school <- as.factor(data$school)
-data$Pstatus <- as.factor(data$Pstatus)
+#data$school <- as.factor(data$school)
+#data$Pstatus <- as.factor(data$Pstatus)
 data$famsize <- as.factor(data$famsize)
 data$internet <- as.factor(data$internet)
 data$higher <- as.factor(data$higher)
 
 
 # Select Only Specific Variables 
-data <- data %>% select(final, letter, G3, sex, age, school, absences, Pstatus, Medu, Fedu, famsize, famrel, studytime, failures, internet, higher, traveltime, Walc, health)
+data <- data %>% select(final, letter, G3, G1, G2, sex, age, school, absences, Pstatus, Medu, Fedu, famsize, famrel, studytime, failures, internet, higher, traveltime, Walc, health)
 
 # ------------------------------------------ # 
 
@@ -82,7 +82,7 @@ shinyServer(function(input, output, session) {
     
     # Output for Numerical analysis  
     output$numsums <- renderGvis({
-        numData <- data %>% select(G3, age, absences, Medu, Fedu, famrel, studytime, 
+        numData <- data %>% select(G3, G1, G2, age, absences, Medu, Fedu, famrel, studytime, 
                                    failures, traveltime, Walc, health)
         mat <- apply(numData, 2, summary, digits = 2, na.rm = TRUE)
         mat <- cbind(' ' = c("Min", "1st Q", "Median", "Mean", "3rd Q", "Max"), mat)
@@ -173,22 +173,27 @@ shinyServer(function(input, output, session) {
 # -------------- TAB 4 ------------ #
        
     # Linear regression 
-    output$linreg <- renderPrint({
+    
         # Data for Regression 
-        regData <- data %>% select(G3, sex, age, absences, studytime, failures)
+        regData <- data %>% select(G3, G1, G2, age, absences, Medu, Fedu, famrel, studytime, 
+                                   failures, traveltime, Walc, health)
         
-        if(length(input$regX) > 0){
-            model <- lm(as.formula(paste("G3 ~ ", paste(input$regX, collapse = "+"))), data = regData)
+        modelFunc <- reactive({
+            lm(as.formula(paste("G3 ~ ", paste(input$regX, collapse = "+"))), data = regData)
+        })
+            
+        output$linreg <- renderPrint({ 
+          if(length(input$regX) > 0){
+            model <- modelFunc()
             print(model$coefficients)
         } else {}
-    })
+        })
 
     
     predictionFunc <- reactive({
-      regData <- data %>% select(G3, age, absences, studytime, failures)
-      fullModel <- lm(G3 ~ ., data = regData)
       dataframe <- data.frame(age = input$ageValue, absences = input$absencesValue, studytime = input$studytimeValue, failures = input$failuresValue)
-     pred <- predict(fullModel, dataframe )
+      model <- modelFunc()
+     pred <- predict(model, dataframe )
       pred
     })
     
