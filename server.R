@@ -175,7 +175,7 @@ shinyServer(function(input, output, session) {
     # Linear regression 
     
         # Data for Regression 
-        regData <- data %>% select(G3, G1, G2, age, absences, Medu, Fedu, famrel, studytime, 
+        regData <- data %>% select(G3, G1, G2, letter, age, absences, Medu, Fedu, famrel, studytime, 
                                    failures, traveltime, Walc, health)
         
         modelFunc <- reactive({
@@ -188,43 +188,56 @@ shinyServer(function(input, output, session) {
             print(model$coefficients)
         } else {}
         })
-
     
-    predictionFunc <- reactive({
-      dataframe <- data.frame(age = input$ageValue, absences = input$absencesValue, studytime = input$studytimeValue, failures = input$failuresValue)
-      model <- modelFunc()
-     pred <- predict(model, dataframe )
-      pred
-    })
-    
-    output$predictReg <- renderPrint({
-      print(predictionFunc())
+        output$predictReg <- renderPrint({
+          if (length(input$regX) > 0){
+            print(predictionFunc())
+          } else {
+        print("Choose x variable to create model for prediction.")
+      }
     })
     
     # Classification Tree  
     
-    output$tree <- renderPlot({
-      dataTree <- data %>% select(letter,!!!input$classVars)
-      
-      if (input$classVars > 0){
-      classTree <- tree(as.formula(paste("letter ~ ", paste(input$classVars, collapse = "+"))), data = dataTree, split = "deviance")
+    # Reactive function to create classification tree
+    classTree <- reactive({
+      tree(as.formula(paste("letter ~ ", paste(input$classVars, collapse = "+"))), 
+                        data = regData, split = "deviance")
+          })
     
-        plot(classTree)
-        text(classTree)
+    output$tree <- renderPlot({
+
+      if (length(input$classVars) > 0){
+        classModel <- classTree()
+        plot(classModel)
+        text(classModel)
       } else { }
     })
     
     predictClass <- reactive({
-    classData <- data %>% select(letter, age, absences, studytime, failures)
-    fullTree <- tree(letter ~., data = classData)
-    dataClass <- data.frame(age = input$ageValueC, absences = input$absencesValueC, studytime = input$studytimeValueC, failures = input$failuresValueC)
-    predC <- predict(fullTree, dataClass, type = "class" )
+    dataClass <- data.frame(G1 = input$G1valueC, G2 = input$G2valueC, 
+                            age = input$ageValueC, absences = input$absencesValueC, 
+                            Medu = input$MeduVC, Fedu = input$FeduVC, 
+                            studytime = input$studytimeValueC, failures = input$failuresValueC, 
+                            traveltime = input$travelVC, Walc = input$WalcVC, Health = input$healthVC)
+    predC <- predict(classModel, dataClass, type = "class" )
     predC
     })
     
     output$predictClass <- renderPrint({
-      predictClass()
-    })
+      if (length(input$classVars) > 0){
+      dataClass <- data.frame(G1 = input$G1valueC, G2 = input$G2valueC, 
+                              age = input$ageValueC, absences = input$absencesValueC, 
+                              Medu = input$MeduVC, Fedu = input$FeduVC, 
+                              studytime = input$studytimeValueC, failures = input$failuresValueC, 
+                              traveltime = input$travelVC, Walc = input$WalcVC, Health = input$healthVC)
+      classModel <- classTree()
+      predC <- predict(classModel, dataClass, type = "class" )
+      predC
+    } else {
+      print("Choose at least one x variable to begin prediction")
+    }
+      })
 # -------------- TAB 5 ------------ # 
     # Output for Tab 5 
     

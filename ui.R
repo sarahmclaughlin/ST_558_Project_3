@@ -147,11 +147,12 @@ shinyUI(fluidPage(
                 # Linear Regression Tab
                 tabItem(tabName = "LinReg", 
                         fluidPage(
+                          h1("Create your own linear regression model and use it to predict the final grade (G3)"),
                          box(title = "General Linear Regression Equation", 
                               withMathJax("$$Y_i =\\beta_0 +\\beta_1{X_1}+...+\\epsilon_i$$")),
                           box(title = "Linear Regression", 
                               selectInput("regX", "Pick X Variable(s) for Linear Regression", 
-                                          choices = list("G3", "G1", "G2", "age", "absences", "Medu",
+                                          choices = list("G1", "G2", "age", "absences", "Medu",
                                                          "Fedu", "famrel", "studytime",
                                                          "failures", "traveltime", "Walc",
                                                          "health"), multiple = TRUE), 
@@ -164,10 +165,10 @@ shinyUI(fluidPage(
                             numericInput("ageValue", "Age", value = 0, min = 15, max = 22, step = 1),
                             numericInput("absencesValue", "Absences", value = 0, min = 0, max = 75, step = 1),
                               h6("For Mother's Education, 0 = No Education, 1 = Primary (4th Grade), 2 = 5th to 9th
-                                 Grade, 3 = Secondary Education, 4 = High Education"),
+                                 Grade, 3 = Secondary Education, 4 = Higher Education"),
                             numericInput("MeduV", "Mother's Education", value = 0, min = 0, max = 4, step = 1), 
                               h6("For Father's Education, 0 = No Education, 1 = Primary (4th Grade), 2 = 5th to 9th
-                                 Grade, 3 = Secondary Education, 4 = High Education"), 
+                                 Grade, 3 = Secondary Education, 4 = Higher Education"), 
                             numericInput("FeduV", "Father's Education", value = 0, min = 0, max = 4, step = 1), 
                               h6("For Quality of Family Relationship, from 1 - very bad to 5 - excellent"), 
                             numericInput("famrelV", "Family Relationship", value = 0, min = 1, max = 5, step = 1), 
@@ -195,18 +196,39 @@ shinyUI(fluidPage(
                         fluidRow(
                         box(title = "Pick variables for Classification Tree", 
                             selectInput("classVars", "Variables", 
-                                        choices = list("age", "absences", "studytime", "failures"), 
+                                        choices = list("G1", "G2", "age", "absences", "Medu",
+                                                       "Fedu", "famrel", "studytime",
+                                                       "failures", "traveltime", "Walc",
+                                                       "health"), 
                                         multiple = TRUE)), 
                         box(title = "Classification Tree to Predict Letter Grade", 
                         plotOutput("tree"))),
                         fluidRow(
                           box(title = "Assign Variables for Prediction", 
+                              numericInput("G1valueC", "G1", value = 0, min = 0, max = 20, step = 1), 
+                              numericInput("G2valueC", "G2", value = 0, min = 0, max = 20, step = 1), 
                               numericInput("ageValueC", "Age", value = 0, min = 15, max = 22, step = 1),
                               numericInput("absencesValueC", "Absences", value = 0, min = 0, max = 75, step = 1), 
-                              h6("For study time, Less Than Two Hours = 1, 2-5 Hours = 2, 5-10 Hours = 3, More than 10 Hours = 4"),
-                              numericInput("studytimeValueC", "Studytime", value = 0, min = 0, max = 4, step = 1 ), 
-                              numericInput("failuresValueC", "Number of Failures", value = 0, min = 0, max = 3, step = 1)), 
-                          box(title = "Prediction", 
+                                h6("For Mother's Education, 0 = No Education, 1 = Primary (4th Grade), 2 = 5th to 
+                                   9th Grade, 3 = Secondary Education, 4 = Higher Education"),
+                              numericInput("MeduVC", "Mother's Education", value = 0, min = 0, max = 4, step = 1), 
+                                h6("For Father's Education, 0 = No Education, 1 = Primary (4th Grade), 2 = 5th to 
+                                   9th Grade, 3 = Secondary Education, 4 = Higher Education"),
+                              numericInput("FeduVC", "Father's Education", value = 0, min = 0, max = 4, step = 1), 
+                                h6("For study time, Less Than Two Hours = 1, 2-5 Hours = 2, 5-10 Hours = 3, More 
+                                   than 10 Hours = 4"),
+                              numericInput("studytimeValueC", "Studytime", value = 0, min = 0, max = 4, step = 1 ),
+                              numericInput("failuresValueC", "Number of Failures", value = 0, min = 0, max = 3, 
+                                           step = 1),
+                              numericInput("travelVC", "Travel Time (in hours)", value = 0, min = 1, max = 4, 
+                                           step = 1), 
+                              h6("For Weekly Alcohol Consumption, from 1 - very low to 5 - very high"), 
+                              numericInput("WalcVC", "Weekly Alcohol Consumption", value = 0, min = 1, max = 5, 
+                                           step = 1), 
+                              h6("For Current Health Status, from 1 - very bad to 5 - very good"), 
+                              numericInput("healthVC", "Current Health Status", value = 0, min = 1, max = 5, 
+                                           step =1)), 
+                          box(title = "Letter Grade Prediction using Above Classification Tree", 
                               verbatimTextOutput("predictClass"))))), 
                         
           
