@@ -26,8 +26,6 @@ data <- mutate(data, final = ifelse(G3>= 10, "Pass", "Fail"))
 # Make certain variables factors
 data$letter <- as.factor(data$letter)
 data$final <- as.factor(data$final)
-#data$school <- as.factor(data$school)
-#data$Pstatus <- as.factor(data$Pstatus)
 data$famsize <- as.factor(data$famsize)
 data$internet <- as.factor(data$internet)
 data$higher <- as.factor(data$higher)
@@ -43,25 +41,28 @@ shinyServer(function(input, output, session) {
 
 
 # ---------- TAB 1 ---------------- #
+    # URL Link to Paper 
     url <- a("Link to Paper", href = "http://www3.dsi.uminho.pt/pcortez/student.pdf ")
     output$paper <- renderUI({
       tagList("URL Link:", url)
     })
     
 # ---------- TAB 2 ---------------- # 
+    # Reactive data function
     getData <- reactive({
         data2 <- data %>% select(input$CatTable)
         })
     
-    # Output for Tab 2 
+    # Output for Oneway Table
     output$catTable <- renderTable({
         
-    # Get filtered data 
+      # Get filtered data 
         newData <- getData()
         
-    # One Way Table
-    table(select(newData, input$CatTable))
+      # One Way Table
+        table(select(newData, input$CatTable))
     })
+    
     
     # Bar Graphs
     output$catGraph <- renderPlot({
@@ -115,6 +116,7 @@ shinyServer(function(input, output, session) {
         g + geom_point(position = "jitter")}
     )
     
+    # Dynamic UI for Title of Scatterplot
     output$ScatTitle <- renderUI({
       text <- paste0("Scatterplot for ", input$xvar, " by ", input$yvar)
       h2(text)
@@ -144,10 +146,12 @@ shinyServer(function(input, output, session) {
        )
     
 # -------------- TAB 3 ------------ #
+       # PCA Output 
        output$PCAOutput <- renderPrint({
            if (length(input$PCAVar) == 0){
                return("Pick a variable to begin Principal Component Analysis")
            } else {
+             
         # PCA Function  
         PCs <- prcomp(select(data, !!!input$PCAVar), scale = TRUE)
         
@@ -172,7 +176,8 @@ shinyServer(function(input, output, session) {
            plot(PCs$sdev^2/sum(PCs$sdev^2), xlab = "Principal Component", 
                 ylab = "Proportion of Variance Explained", ylim = c(0,1), 
                 type = 'b')
-           plot(cumsum(PCs$sdev^2/sum(PCs$sdev^2)), xlab = "Principal Component", ylab = "Cum. Prop of Variance Explained", ylim = c(0,1), type = 'b')
+           plot(cumsum(PCs$sdev^2/sum(PCs$sdev^2)), xlab = "Principal Component", 
+                ylab = "Cum. Prop of Variance Explained", ylim = c(0,1), type = 'b')
            } else {}
        })
       
@@ -184,10 +189,12 @@ shinyServer(function(input, output, session) {
         regData <- data %>% select(G3, G1, G2, letter, age, absences, Medu, Fedu, famrel, studytime, 
                                    failures, traveltime, Walc, health)
         
+        # Reactive function to create linear regression model 
         modelFunc <- reactive({
             lm(as.formula(paste("G3 ~ ", paste(input$regX, collapse = "+"))), data = regData)
         })
-            
+        
+        # Output of coefficients of model    
         output$linreg <- renderPrint({ 
           if(length(input$regX) > 0){
             model <- modelFunc()
@@ -207,6 +214,7 @@ shinyServer(function(input, output, session) {
         pred
         })
         
+        # Output for prediction value 
         output$predictReg <- renderPrint({
           if (length(input$regX) > 0){
             print(predictionFunc())
@@ -223,6 +231,7 @@ shinyServer(function(input, output, session) {
                         data = regData, split = "deviance")
           })
     
+    # Output that draws tree 
     output$tree <- renderPlot({
 
       if (length(input$classVars) > 0){
@@ -231,24 +240,15 @@ shinyServer(function(input, output, session) {
         text(classModel)
       } else { }
     })
-    
-    predictClass <- reactive({
-    dataClass <- data.frame(G1 = input$G1valueC, G2 = input$G2valueC, 
-                            age = input$ageValueC, absences = input$absencesValueC, 
-                            Medu = input$MeduVC, Fedu = input$FeduVC, 
-                            studytime = input$studytimeValueC, failures = input$failuresValueC, 
-                            traveltime = input$travelVC, Walc = input$WalcVC, Health = input$healthVC)
-    predC <- predict(classModel, dataClass, type = "class" )
-    predC
-    })
-    
+  
+    # Output for classification prediction
     output$predictClass <- renderPrint({
       if (length(input$classVars) > 0){
       dataClass <- data.frame(G1 = input$G1valueC, G2 = input$G2valueC, 
                               age = input$ageValueC, absences = input$absencesValueC, 
                               Medu = input$MeduVC, Fedu = input$FeduVC, 
                               studytime = input$studytimeValueC, failures = input$failuresValueC, 
-                              traveltime = input$travelVC, Walc = input$WalcVC, Health = input$healthVC)
+                              traveltime = input$travelVC, Walc = input$WalcVC, health = input$healthVC)
       classModel <- classTree()
       predC <- predict(classModel, dataClass, type = "class" )
       predC
@@ -256,15 +256,18 @@ shinyServer(function(input, output, session) {
       print("Choose at least one x variable to begin prediction")
     }
       })
+    
 # -------------- TAB 5 ------------ # 
-    # Output for Tab 5 
+    # Output for Data table
     
     output$tab5 <- renderGvis({
-      
+      if (length(input$vars) >0 ){
       data1 <<- data %>% select(!!!input$vars)
         gvisTable(data1)
-    })
+    } else {} 
+      })
     
+    # Download button 
     output$saveData <- downloadHandler(
         filename<- function(){
             paste("data", Sys.Date(), ".csv", sep = "")
