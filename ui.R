@@ -100,7 +100,7 @@ shinyUI(fluidPage(
                                 plotOutput("Hist")),
                             
                             # Scatterplot Box 
-                            box(title = "Scatterplot for Two Variables", 
+                            box(title = uiOutput("ScatTitle"), 
                                 selectInput("xvar", "X", 
                                             choices = list("G3", "G1", "G2", "age", "absences", "Medu",
                                                            "Fedu", "famrel", "studytime",
@@ -150,7 +150,7 @@ shinyUI(fluidPage(
                           h1("Create your own linear regression model and use it to predict the final grade (G3)"),
                          box(title = "General Linear Regression Equation", 
                               withMathJax("$$Y_i =\\beta_0 +\\beta_1{X_1}+...+\\epsilon_i$$")),
-                          box(title = "Linear Regression", 
+                         box(title = "Linear Regression", 
                               selectInput("regX", "Pick X Variable(s) for Linear Regression", 
                                           choices = list("G1", "G2", "age", "absences", "Medu",
                                                          "Fedu", "famrel", "studytime",

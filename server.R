@@ -115,6 +115,12 @@ shinyServer(function(input, output, session) {
         g + geom_point(position = "jitter")}
     )
     
+    output$ScatTitle <- renderUI({
+      text <- paste0("Scatterplot for ", input$xvar, " by ", input$yvar)
+      h2(text)
+    })
+      
+      
     # Info for click 
     output$info <- renderText({
         paste0("x=", input$plot_click$x, "\ny=", input$plot_click$y)
@@ -189,6 +195,18 @@ shinyServer(function(input, output, session) {
         } else {}
         })
     
+        # Reactive prediction func 
+        predictionFunc<- reactive({
+        dataFrame <- data.frame(G1 = input$G1value, G2 = input$G2value, 
+                                age = input$ageValue, absences = input$absencesValue, 
+                                Medu = input$MeduV, Fedu = input$FeduV, 
+                                studytime = input$studytimeValue, failures = input$failuresValue, 
+                                traveltime = input$travelV, Walc = input$WalcV, Health = input$healthV)
+        model <- modelFunc()
+        pred <- predict(model, dataFrame)
+        pred
+        })
+        
         output$predictReg <- renderPrint({
           if (length(input$regX) > 0){
             print(predictionFunc())
